@@ -15,6 +15,13 @@ import {
 } from '../utils/time-utils';
 import { Router } from '@angular/router';
 
+const USER_BROWSER_MESSAGES = {
+  usersLoadFailed: 'Nepodarilo sa načítať používateľov.',
+  loading: 'Načítava sa...',
+  unknown: 'Neznáme',
+  partialDetailLoadFailed: 'Detail sa nepodarilo úplne doplniť z externých služieb.',
+} as const;
+
 @Component({
   selector: 'app-user-browser',
   standalone: true,
@@ -59,6 +66,7 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
     });
   });
 
+  /** Loads all users used by the list and detail panels. */
   ngOnInit(): void {
     this.userApi.getUsers().subscribe({
       next: (users) => {
@@ -66,7 +74,7 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
         this.loadingUsers.set(false);
       },
       error: () => {
-        this.userLoadError.set('Nepodarilo sa načítať používateľov.');
+        this.userLoadError.set(USER_BROWSER_MESSAGES.usersLoadFailed);
         this.loadingUsers.set(false);
       },
     });
@@ -86,6 +94,7 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
     this.appState.setFilterText(value);
   }
 
+  /** Selects a user card; clicking an already selected card toggles it off. */
   selectCard(user: DummyJsonUser): void {
     if (this.selectedCardUserId() === user.id) {
       if (this.activeDetail()?.user.id === user.id) {
@@ -99,6 +108,7 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
     this.selectedCardUserId.set(user.id);
   }
 
+  /** Opens detail and enriches it with gender and location data from external APIs. */
   openDetail(user: DummyJsonUser, event?: MouseEvent): void {
     event?.stopPropagation();
 
@@ -111,10 +121,7 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
     this.detailError.set(null);
     this.detailLoading.set(true);
 
-    if (this.activeHistoryEntryId() !== null) {
-      this.appState.closeHistoryEntry(this.activeHistoryEntryId() as number);
-      this.activeHistoryEntryId.set(null);
-    }
+    this.closeActiveHistoryEntry();
 
     this.detailSubscription?.unsubscribe();
     const historyEntryId = this.appState.addHistoryEntry(
@@ -123,9 +130,9 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
     this.activeHistoryEntryId.set(historyEntryId);
     this.activeDetail.set({
       user,
-      gender: 'Načítava sa...',
-      homeState: 'Načítava sa...',
-      homeCountry: 'Načítava sa...',
+      gender: USER_BROWSER_MESSAGES.loading,
+      homeState: USER_BROWSER_MESSAGES.loading,
+      homeCountry: USER_BROWSER_MESSAGES.loading,
     });
 
     this.detailSubscription = forkJoin({
@@ -135,30 +142,32 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
       next: ({ gender, location }) => {
         this.activeDetail.set({
           user,
-          gender: gender?.gender ?? 'Neznáme',
-          homeState: location?.places[0]?.state ?? user.address?.state ?? 'Neznáme',
-          homeCountry: location?.country ?? user.address?.country ?? 'Neznáme',
+          gender: gender?.gender ?? USER_BROWSER_MESSAGES.unknown,
+          homeState:
+            location?.places[0]?.state ??
+            user.address?.state ??
+            USER_BROWSER_MESSAGES.unknown,
+          homeCountry:
+            location?.country ?? user.address?.country ?? USER_BROWSER_MESSAGES.unknown,
         });
         this.detailLoading.set(false);
       },
       error: () => {
         this.activeDetail.set({
           user,
-          gender: 'Neznáme',
-          homeState: user.address?.state ?? 'Neznáme',
-          homeCountry: user.address?.country ?? 'Neznáme',
+          gender: USER_BROWSER_MESSAGES.unknown,
+          homeState: user.address?.state ?? USER_BROWSER_MESSAGES.unknown,
+          homeCountry: user.address?.country ?? USER_BROWSER_MESSAGES.unknown,
         });
-        this.detailError.set('Detail sa nepodarilo úplne doplniť z externých služieb.');
+        this.detailError.set(USER_BROWSER_MESSAGES.partialDetailLoadFailed);
         this.detailLoading.set(false);
       },
     });
   }
 
+  /** Closes currently shown detail panel and clears associated transient state. */
   closeDetail(): void {
-    if (this.activeHistoryEntryId() !== null) {
-      this.appState.closeHistoryEntry(this.activeHistoryEntryId() as number);
-      this.activeHistoryEntryId.set(null);
-    }
+    this.closeActiveHistoryEntry();
 
     this.detailSubscription?.unsubscribe();
     this.activeDetail.set(null);
@@ -166,11 +175,9 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
     this.detailError.set(null);
   }
 
+  /** Ends session and redirects to login. */
   logout(): void {
-    if (this.activeHistoryEntryId() !== null) {
-      this.appState.closeHistoryEntry(this.activeHistoryEntryId() as number);
-      this.activeHistoryEntryId.set(null);
-    }
+    this.closeActiveHistoryEntry();
 
     this.detailSubscription?.unsubscribe();
     this.detailSubscription = null;
@@ -196,5 +203,16 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
 
   trackHistoryEntry(_: number, entry: DetailHistoryEntry): number {
     return entry.id;
+  }
+
+  /** Closes active history entry when a detail view is replaced or dismissed. */
+  private closeActiveHistoryEntry(): void {
+    const activeHistoryEntryId = this.activeHistoryEntryId();
+    if (activeHistoryEntryId === null) {
+      return;
+    }
+
+    this.appState.closeHistoryEntry(activeHistoryEntryId);
+    this.activeHistoryEntryId.set(null);
   }
 }

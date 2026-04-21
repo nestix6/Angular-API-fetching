@@ -28,6 +28,17 @@ Simple Angular project that demonstrates routing, route guards, reactive forms, 
 - Angular Router
 - Reactive Forms
 
+## Project Structure
+
+- src/components/app-shell: root shell with router outlet
+- src/components/auth: login form and related styles
+- src/components/user-browser: protected app UI with list, detail, and history panels
+- src/components/services: shared app state and external API calls
+- src/components/guards: route protection for authenticated session
+- src/components/models: TypeScript interfaces for API and app data
+- src/components/utils: formatting and normalization helpers
+- src/global_styles.css: base app-wide styling
+
 ## Run Locally
 
 1. Install dependencies:
@@ -52,3 +63,9 @@ http://localhost:4200
 
 - `npm start` - run development server (`ng serve`)
 - `npm run build` - build production bundle
+
+## Troubleshooting
+
+- If Genderize or Zippopotam requests fail, user detail still opens with fallback values.
+- If login fails for expected user, verify first name and last name match DummyJSON records.
+- If the app route redirects back to login, ensure session was started from the login form.

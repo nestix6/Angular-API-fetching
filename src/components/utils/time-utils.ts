@@ -1,7 +1,9 @@
+/** Normalizes text for case-insensitive comparisons and filtering. */
 export function normalizeText(value: string): string {
   return value.trim().toLowerCase();
 }
 
+/** Formats time as HH:MM:SS in Slovak locale, or fallback dash for null. */
 export function formatClockTime(date: Date | null): string {
   if (!date) {
     return '—';
@@ -14,6 +16,7 @@ export function formatClockTime(date: Date | null): string {
   });
 }
 
+/** Formats date and time in Slovak locale, or fallback dash for null. */
 export function formatDateTime(date: Date | null): string {
   if (!date) {
     return '—';
@@ -25,6 +28,7 @@ export function formatDateTime(date: Date | null): string {
   });
 }
 
+/** Converts milliseconds to HH:MM:SS with rounding up to whole seconds. */
 export function formatDuration(milliseconds: number): string {
   const roundedSeconds = Math.ceil(milliseconds / 1000);
   const hours = Math.floor(roundedSeconds / 3600);

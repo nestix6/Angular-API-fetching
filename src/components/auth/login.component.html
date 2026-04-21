@@ -1,17 +1,20 @@
 <div class="login-page">
   <section class="login-card">
+    <!-- Intro header -->
     <p class="eyebrow">Angular user browser</p>
     <h1>Prihlásenie</h1>
     <p class="subtitle">
       Zadaj meno a priezvisko používateľa, ktorý existuje v DummyJSON.
     </p>
 
+    <!-- Session summary from previous logout -->
     @if (appState.lastLogoutDuration()) {
       <div class="session-banner">
         Posledná relácia trvala {{ appState.lastLogoutDuration() }}.
       </div>
     }
 
+    <!-- Loading and failure states -->
     @if (loading()) {
       <p class="status">Načítavam používateľov...</p>
     } @else {
@@ -19,6 +22,7 @@
         <p class="error">{{ loadError() }}</p>
       }
 
+      <!-- Login form -->
       <form class="login-form" [formGroup]="form" (ngSubmit)="submit()">
         <label>
           <span>Meno</span>
@@ -34,7 +38,10 @@
           <p class="error">{{ submitError() }}</p>
         }
 
-        <button type="submit" [disabled]="form.invalid || loadError() !== null">
+        <button
+          type="submit"
+          [disabled]="form.invalid || loadError() !== null"
+        >
           Prihlásiť sa
         </button>
       </form>

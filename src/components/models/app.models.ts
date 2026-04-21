@@ -1,3 +1,4 @@
+/** DummyJSON wrapper response with pagination metadata. */
 export interface DummyJsonUsersResponse {
   users: DummyJsonUser[];
   total: number;
@@ -5,6 +6,7 @@ export interface DummyJsonUsersResponse {
   limit: number;
 }
 
+/** User shape consumed from DummyJSON plus optional nested fields. */
 export interface DummyJsonUser {
   id: number;
   firstName: string;
@@ -42,12 +44,14 @@ export interface DummyJsonUser {
   university: string;
 }
 
+/** Minimal identity persisted for authenticated session state. */
 export interface AuthenticatedUser {
   id: number;
   firstName: string;
   lastName: string;
 }
 
+/** Genderize API response for first-name gender prediction. */
 export interface GenderizeResponse {
   name: string;
   gender: string | null;
@@ -55,6 +59,7 @@ export interface GenderizeResponse {
   count: number;
 }
 
+/** Zippopotam API response for postal-code location details. */
 export interface ZippopotamResponse {
   postCode: string;
   country: string;
@@ -68,6 +73,7 @@ export interface ZippopotamResponse {
   }>;
 }
 
+/** Detail panel payload combining DummyJSON user and enrichment fields. */
 export interface EnrichedUserDetail {
   user: DummyJsonUser;
   gender: string;
@@ -75,6 +81,7 @@ export interface EnrichedUserDetail {
   homeCountry: string;
 }
 
+/** Single detail-open history record tracked per session. */
 export interface DetailHistoryEntry {
   id: number;
   fullName: string;

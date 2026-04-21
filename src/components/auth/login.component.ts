@@ -5,6 +5,11 @@ import { AppStateService } from '../services/app-state.service';
 import { DummyJsonUser } from '../models/app.models';
 import { UserApiService } from '../services/user-api.service';
 
+const LOGIN_MESSAGES = {
+  usersLoadFailed: 'Nepodarilo sa načítať zoznam používateľov z DummyJSON.',
+  userNotFound: 'Zadané meno a priezvisko sa nenašli medzi používateľmi.',
+} as const;
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -28,6 +33,7 @@ export class LoginComponent implements OnInit {
     lastName: ['', [Validators.required]],
   });
 
+  /** Loads users once on page load so login can be validated locally. */
   ngOnInit(): void {
     this.userApi.getUsers().subscribe({
       next: (users) => {
@@ -35,12 +41,13 @@ export class LoginComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.loadError.set('Nepodarilo sa načítať zoznam používateľov z DummyJSON.');
+        this.loadError.set(LOGIN_MESSAGES.usersLoadFailed);
         this.loading.set(false);
       },
     });
   }
 
+  /** Validates form input and starts a session for a matched DummyJSON user. */
   submit(): void {
     this.submitError.set(null);
 
@@ -58,7 +65,7 @@ export class LoginComponent implements OnInit {
     );
 
     if (!matchedUser) {
-      this.submitError.set('Zadané meno a priezvisko sa nenašli medzi používateľmi.');
+      this.submitError.set(LOGIN_MESSAGES.userNotFound);
       return;
     }
 
@@ -71,6 +78,7 @@ export class LoginComponent implements OnInit {
     this.router.navigateByUrl('/app');
   }
 
+  /** Normalizes text for case-insensitive and whitespace-tolerant comparison. */
   private normalize(value: string): string {
     return value.trim().toLowerCase();
   }

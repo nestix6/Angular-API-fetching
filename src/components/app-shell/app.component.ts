@@ -7,4 +7,5 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
 })
+/** Root shell component rendering the active route outlet. */
 export class App {}
