@@ -1,0 +1,43 @@
+<div class="login-page">
+  <section class="login-card">
+    <p class="eyebrow">Angular user browser</p>
+    <h1>Prihlásenie</h1>
+    <p class="subtitle">
+      Zadaj meno a priezvisko používateľa, ktorý existuje v DummyJSON.
+    </p>
+
+    @if (appState.lastLogoutDuration()) {
+      <div class="session-banner">
+        Posledná relácia trvala {{ appState.lastLogoutDuration() }}.
+      </div>
+    }
+
+    @if (loading()) {
+      <p class="status">Načítavam používateľov...</p>
+    } @else {
+      @if (loadError()) {
+        <p class="error">{{ loadError() }}</p>
+      }
+
+      <form class="login-form" [formGroup]="form" (ngSubmit)="submit()">
+        <label>
+          <span>Meno</span>
+          <input type="text" formControlName="firstName" autocomplete="given-name" />
+        </label>
+
+        <label>
+          <span>Priezvisko</span>
+          <input type="text" formControlName="lastName" autocomplete="family-name" />
+        </label>
+
+        @if (submitError()) {
+          <p class="error">{{ submitError() }}</p>
+        }
+
+        <button type="submit" [disabled]="form.invalid || loadError() !== null">
+          Prihlásiť sa
+        </button>
+      </form>
+    }
+  </section>
+</div>

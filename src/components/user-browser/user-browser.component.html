@@ -1,0 +1,137 @@
+<div class="shell">
+  <header class="top-bar">
+    <div class="identity-block">
+      <p class="eyebrow">Prihlásený používateľ</p>
+      <h1>{{ fullName(currentUser()) }}</h1>
+      <p class="meta">Prihlásenie: {{ formatLoginAt() }}</p>
+    </div>
+
+    <div class="stats-block">
+      <div class="stat-card">
+        <span>Kliky po logine</span>
+        <strong>{{ clickCount() }}</strong>
+      </div>
+      <div class="stat-card">
+        <span>Aktívny detail</span>
+        <strong>{{ activeDetail() ? 'Áno' : 'Nie' }}</strong>
+      </div>
+    </div>
+
+    <label class="filter-block">
+      <span>Filter podľa priezviska</span>
+      <input
+        type="text"
+        [value]="filterText()"
+        (input)="onFilterInput($event)"
+        placeholder="Napíš časť priezviska"
+      />
+    </label>
+
+    <button class="logout-button" type="button" (click)="logout()">Logout</button>
+  </header>
+
+  <main class="panels">
+    <section class="panel list-panel">
+      <div class="panel-head">
+        <h2>Používatelia</h2>
+        <p>{{ filteredUsers().length }} záznamov</p>
+      </div>
+
+      @if (loadingUsers()) {
+        <p class="muted">Načítavam používateľov...</p>
+      } @else if (userLoadError()) {
+        <p class="error">{{ userLoadError() }}</p>
+      } @else {
+        <div class="user-list">
+          @for (user of filteredUsers(); track user.id) {
+            <article
+              class="user-card"
+              [class.selected]="selectedCardUserId() === user.id"
+              (click)="selectCard(user)"
+            >
+              <div class="user-summary">
+                <h3>{{ user.firstName }} {{ user.lastName }}</h3>
+                <p>{{ user.email }}</p>
+              </div>
+
+              @if (selectedCardUserId() === user.id) {
+                <div class="card-actions">
+                  <button
+                    type="button"
+                    [disabled]="detailLoading()"
+                    [class.is-unavailable]="detailLoading()"
+                    [attr.aria-busy]="detailLoading()"
+                    (click)="openDetail(user, $event)"
+                  >
+                    {{ detailLoading() ? 'Načítavam detail...' : 'Zobrazit detail' }}
+                  </button>
+                </div>
+              }
+            </article>
+          } @empty {
+            <p class="muted">Žiadny používateľ nespĺňa filter.</p>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="panel detail-panel">
+      <div class="panel-head">
+        <h2>Detail používateľa</h2>
+        @if (activeDetail()) {
+          <button type="button" class="secondary" (click)="closeDetail()">Zatvoriť detail</button>
+        }
+      </div>
+
+      @if (detailLoading()) {
+        <p class="muted">Detail sa dopĺňa z externých služieb...</p>
+      }
+
+      @if (detailError()) {
+        <p class="error">{{ detailError() }}</p>
+      }
+
+      @if (activeDetail(); as detail) {
+        <div class="detail-card">
+          <img [src]="detail.user.image" [alt]="fullName(detail.user)" />
+
+          <div class="detail-grid">
+            <div><span>Meno</span><strong>{{ detail.user.firstName }}</strong></div>
+            <div><span>Priezvisko</span><strong>{{ detail.user.lastName }}</strong></div>
+            <div><span>Username</span><strong>{{ detail.user.username }}</strong></div>
+            <div><span>Dátum narodenia</span><strong>{{ detail.user.birthDate }}</strong></div>
+            <div><span>Eye color</span><strong>{{ detail.user.eyeColor }}</strong></div>
+            <div><span>Univerzita</span><strong>{{ detail.user.university }}</strong></div>
+            <div><span>Mac address</span><strong>{{ detail.user.macAddress }}</strong></div>
+            <div><span>IP</span><strong>{{ detail.user.ip }}</strong></div>
+            <div><span>Mesto</span><strong>{{ detail.user.address?.city ?? 'Neznáme' }}</strong></div>
+            <div><span>Domovský štát</span><strong>{{ detail.homeState }}</strong></div>
+            <div><span>Domovská krajina</span><strong>{{ detail.homeCountry }}</strong></div>
+            <div><span>Testovacie pohlavie</span><strong>{{ detail.gender }}</strong></div>
+          </div>
+        </div>
+      } @else {
+        <p class="muted">Vyber používateľa z ľavého panelu a zobraz detail.</p>
+      }
+    </section>
+
+    <section class="panel history-panel">
+      <div class="panel-head">
+        <h2>História</h2>
+        <p>Každé otvorenie detailu sa zaznamenáva.</p>
+      </div>
+
+      <div class="history-list">
+        @for (entry of history(); track trackHistoryEntry($index, entry)) {
+          <article class="history-item">
+            <strong>{{ entry.fullName }}</strong>
+            <span>Začiatok: {{ formatHistoryTime(entry.startAt) }}</span>
+            <span>Koniec: {{ formatHistoryTime(entry.endAt) }}</span>
+          </article>
+        } @empty {
+          <p class="muted">História sa zobrazí po otvorení detailu.</p>
+        }
+      </div>
+    </section>
+  </main>
+</div>
