@@ -191,7 +191,6 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
     this.closeActiveHistoryEntry();
 
     this.detailSubscription?.unsubscribe();
-    this.detailSubscription = null;
     this.appState.endSession();
     this.router.navigateByUrl("/login");
   }

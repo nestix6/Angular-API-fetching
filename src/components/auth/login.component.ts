@@ -1,21 +1,22 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AppStateService } from '../services/app-state.service';
-import { DummyJsonUser } from '../models/app.models';
-import { UserApiService } from '../services/user-api.service';
+import { Component, OnInit, inject, signal } from "@angular/core";
+import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
+import { AppStateService } from "../services/app-state.service";
+import { DummyJsonUser } from "../models/app.models";
+import { UserApiService } from "../services/user-api.service";
+import { normalizeText } from "../utils/time-utils";
 
 const LOGIN_MESSAGES = {
-  usersLoadFailed: 'Nepodarilo sa načítať zoznam používateľov z DummyJSON.',
-  userNotFound: 'Zadané meno a priezvisko sa nenašli medzi používateľmi.',
+  usersLoadFailed: "Nepodarilo sa načítať zoznam používateľov z DummyJSON.",
+  userNotFound: "Zadané meno a priezvisko sa nenašli medzi používateľmi.",
 } as const;
 
 @Component({
-  selector: 'app-login',
+  selector: "app-login",
   standalone: true,
   imports: [ReactiveFormsModule],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  templateUrl: "./login.component.html",
+  styleUrls: ["./login.component.css"],
 })
 export class LoginComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
@@ -29,8 +30,8 @@ export class LoginComponent implements OnInit {
   readonly users = signal<DummyJsonUser[]>([]);
 
   readonly form = this.formBuilder.nonNullable.group({
-    firstName: ['', [Validators.required]],
-    lastName: ['', [Validators.required]],
+    firstName: ["", [Validators.required]],
+    lastName: ["", [Validators.required]],
   });
 
   /** Loads users once on page load so login can be validated locally. */
@@ -56,12 +57,14 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    const submittedFirstName = this.normalize(this.form.controls.firstName.value);
-    const submittedLastName = this.normalize(this.form.controls.lastName.value);
+    const submittedFirstName = normalizeText(
+      this.form.controls.firstName.value,
+    );
+    const submittedLastName = normalizeText(this.form.controls.lastName.value);
     const matchedUser = this.users().find(
       (user) =>
-        this.normalize(user.firstName) === submittedFirstName &&
-        this.normalize(user.lastName) === submittedLastName
+        normalizeText(user.firstName) === submittedFirstName &&
+        normalizeText(user.lastName) === submittedLastName,
     );
 
     if (!matchedUser) {
@@ -75,11 +78,6 @@ export class LoginComponent implements OnInit {
       lastName: matchedUser.lastName,
     });
 
-    this.router.navigateByUrl('/app');
-  }
-
-  /** Normalizes text for case-insensitive and whitespace-tolerant comparison. */
-  private normalize(value: string): string {
-    return value.trim().toLowerCase();
+    this.router.navigateByUrl("/app");
   }
 }
