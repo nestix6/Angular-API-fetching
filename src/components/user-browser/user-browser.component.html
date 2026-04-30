@@ -14,7 +14,7 @@
       </div>
       <div class="stat-card">
         <span>Aktívny detail</span>
-        <strong>{{ activeDetail() ? 'Áno' : 'Nie' }}</strong>
+        <strong>{{ activeDetail() ? "Áno" : "Nie" }}</strong>
       </div>
     </div>
 
@@ -28,7 +28,9 @@
       />
     </label>
 
-    <button class="logout-button" type="button" (click)="logout()">Logout</button>
+    <button class="logout-button" type="button" (click)="logout()">
+      Logout
+    </button>
   </header>
 
   <main class="panels">
@@ -65,7 +67,11 @@
                     [attr.aria-busy]="detailLoading()"
                     (click)="openDetail(user, $event)"
                   >
-                    {{ detailLoading() ? 'Načítavam detail...' : 'Zobrazit detail' }}
+                    {{
+                      detailLoading()
+                        ? "Načítavam detail..."
+                        : "Zobrazit detail"
+                    }}
                   </button>
                 </div>
               }
@@ -82,11 +88,7 @@
       <div class="panel-head">
         <h2>Detail používateľa</h2>
         @if (activeDetail()) {
-          <button
-            type="button"
-            class="secondary"
-            (click)="closeDetail()"
-          >
+          <button type="button" class="secondary" (click)="closeDetail()">
             Zatvoriť detail
           </button>
         }
@@ -105,18 +107,48 @@
           <img [src]="detail.user.image" [alt]="fullName(detail.user)" />
 
           <div class="detail-grid">
-            <div><span>Meno</span><strong>{{ detail.user.firstName }}</strong></div>
-            <div><span>Priezvisko</span><strong>{{ detail.user.lastName }}</strong></div>
-            <div><span>Username</span><strong>{{ detail.user.username }}</strong></div>
-            <div><span>Dátum narodenia</span><strong>{{ detail.user.birthDate }}</strong></div>
-            <div><span>Eye color</span><strong>{{ detail.user.eyeColor }}</strong></div>
-            <div><span>Univerzita</span><strong>{{ detail.user.university }}</strong></div>
-            <div><span>Mac address</span><strong>{{ detail.user.macAddress }}</strong></div>
-            <div><span>IP</span><strong>{{ detail.user.ip }}</strong></div>
-            <div><span>Mesto</span><strong>{{ detail.user.address?.city ?? 'Neznáme' }}</strong></div>
-            <div><span>Domovský štát</span><strong>{{ detail.homeState }}</strong></div>
-            <div><span>Domovská krajina</span><strong>{{ detail.homeCountry }}</strong></div>
-            <div><span>Testovacie pohlavie</span><strong>{{ detail.gender }}</strong></div>
+            <div>
+              <span>Meno</span><strong>{{ detail.user.firstName }}</strong>
+            </div>
+            <div>
+              <span>Priezvisko</span><strong>{{ detail.user.lastName }}</strong>
+            </div>
+            <div>
+              <span>Username</span><strong>{{ detail.user.username }}</strong>
+            </div>
+            <div>
+              <span>Dátum narodenia</span
+              ><strong>{{ detail.user.birthDate }}</strong>
+            </div>
+            <div>
+              <span>Eye color</span><strong>{{ detail.user.eyeColor }}</strong>
+            </div>
+            <div>
+              <span>Univerzita</span
+              ><strong>{{ detail.user.university }}</strong>
+            </div>
+            <div>
+              <span>Mac address</span
+              ><strong>{{ detail.user.macAddress }}</strong>
+            </div>
+            <div>
+              <span>IP</span><strong>{{ detail.user.ip }}</strong>
+            </div>
+            <div>
+              <span>Mesto</span
+              ><strong>{{ detail.user.address?.city ?? "Neznáme" }}</strong>
+            </div>
+            <div>
+              <span>Domovský štát</span><strong>{{ detail.homeState }}</strong>
+            </div>
+            <div>
+              <span>Domovská krajina</span
+              ><strong>{{ detail.homeCountry }}</strong>
+            </div>
+            <div>
+              <span>Testovacie pohlavie</span
+              ><strong>{{ detail.gender }}</strong>
+            </div>
           </div>
         </div>
       } @else {
@@ -128,7 +160,6 @@
     <section class="panel history-panel">
       <div class="panel-head">
         <h2>História</h2>
-        <p>Každé otvorenie detailu sa zaznamenáva.</p>
       </div>
 
       <div class="history-list">

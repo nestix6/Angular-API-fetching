@@ -1,32 +1,41 @@
-import { Component, HostListener, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
-import { forkJoin, Subscription } from 'rxjs';
-import { AppStateService } from '../services/app-state.service';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from "@angular/core";
+import { forkJoin, Subscription } from "rxjs";
+import { AppStateService } from "../services/app-state.service";
 import {
   AuthenticatedUser,
   DetailHistoryEntry,
   DummyJsonUser,
   EnrichedUserDetail,
-} from '../models/app.models';
-import { UserApiService } from '../services/user-api.service';
+} from "../models/app.models";
+import { UserApiService } from "../services/user-api.service";
 import {
   formatClockTime,
   formatDateTime,
   normalizeText,
-} from '../utils/time-utils';
-import { Router } from '@angular/router';
+} from "../utils/time-utils";
+import { Router } from "@angular/router";
 
 const USER_BROWSER_MESSAGES = {
-  usersLoadFailed: 'Nepodarilo sa načítať používateľov.',
-  loading: 'Načítava sa...',
-  unknown: 'Neznáme',
-  partialDetailLoadFailed: 'Detail sa nepodarilo úplne doplniť z externých služieb.',
+  usersLoadFailed: "Nepodarilo sa načítať používateľov.",
+  loading: "Načítava sa...",
+  unknown: "Neznáme",
+  partialDetailLoadFailed:
+    "Detail sa nepodarilo úplne doplniť z externých služieb.",
 } as const;
 
 @Component({
-  selector: 'app-user-browser',
+  selector: "app-user-browser",
   standalone: true,
-  templateUrl: './user-browser.component.html',
-  styleUrls: ['./user-browser.component.css'],
+  templateUrl: "./user-browser.component.html",
+  styleUrls: ["./user-browser.component.css"],
 })
 export class UserBrowserComponent implements OnInit, OnDestroy {
   private readonly userApi = inject(UserApiService);
@@ -84,7 +93,7 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
     this.detailSubscription?.unsubscribe();
   }
 
-  @HostListener('document:click')
+  @HostListener("document:click")
   onDocumentClick(): void {
     this.appState.incrementClicks();
   }
@@ -125,7 +134,7 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
 
     this.detailSubscription?.unsubscribe();
     const historyEntryId = this.appState.addHistoryEntry(
-      `${user.firstName} ${user.lastName}`
+      `${user.firstName} ${user.lastName}`,
     );
     this.activeHistoryEntryId.set(historyEntryId);
     this.activeDetail.set({
@@ -148,7 +157,9 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
             user.address?.state ??
             USER_BROWSER_MESSAGES.unknown,
           homeCountry:
-            location?.country ?? user.address?.country ?? USER_BROWSER_MESSAGES.unknown,
+            location?.country ??
+            user.address?.country ??
+            USER_BROWSER_MESSAGES.unknown,
         });
         this.detailLoading.set(false);
       },
@@ -182,7 +193,7 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
     this.detailSubscription?.unsubscribe();
     this.detailSubscription = null;
     this.appState.endSession();
-    this.router.navigateByUrl('/login');
+    this.router.navigateByUrl("/login");
   }
 
   formatLoginAt(): string {
@@ -195,7 +206,7 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
 
   fullName(user: AuthenticatedUser | DummyJsonUser | null): string {
     if (!user) {
-      return '—';
+      return "—";
     }
 
     return `${user.firstName} ${user.lastName}`;
