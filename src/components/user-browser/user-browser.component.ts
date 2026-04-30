@@ -126,7 +126,7 @@ export class UserBrowserComponent implements OnInit, OnDestroy {
     }
 
     this.appState.incrementClicks();
-    this.selectedCardUserId.set(user.id);
+    this.selectedCardUserId.set(null);
     this.detailError.set(null);
     this.detailLoading.set(true);
 
